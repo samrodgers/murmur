@@ -1,0 +1,9 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicegoodthings/nicegoodthings.github.io/tauri-v2/src/tauri-plugin-schema/schemas/permissions/schema.json",
+  "identifier": "default",
+  "description": "Default capabilities for Murmur desktop",
+  "windows": ["main"],
+  "permissions": [
+    "core:default"
+  ]
+}

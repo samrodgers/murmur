@@ -8,7 +8,7 @@ Murmur is a fully P2P social network where your device is your identity, your ar
 
 - **murmur-core** — Core library containing all protocol logic (identity, events, storage, networking, temperature)
 - **murmur-tui** — Terminal UI for Phase 1 prototyping
-- **murmur-desktop** — Tauri GUI for Phase 2+ (planned)
+- **murmur-desktop** — Tauri v2 + SolidJS desktop GUI
 
 ## Quick Start
 
@@ -27,6 +27,22 @@ MURMUR_DATA=./node-bob cargo run -p murmur-tui -- --port 9001
 ```
 
 The two nodes will discover each other via mDNS on the local network. Posts made on one node will appear on the other.
+
+## Desktop App
+
+```bash
+# Prerequisites (Linux)
+sudo apt install libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev
+
+# Install frontend dependencies
+cd murmur-desktop && npm install && cd ..
+
+# Run in development mode
+cd murmur-desktop && npm run tauri dev
+
+# Build for production
+cd murmur-desktop && npm run tauri build
+```
 
 ## TUI Controls
 
