@@ -1,0 +1,51 @@
+[package]
+name = "murmur-core"
+version = "0.1.0"
+edition = "2021"
+description = "Core library for the Murmur decentralized social protocol"
+
+[dependencies]
+# Cryptography
+ed25519-dalek = { version = "2", features = ["serde", "rand_core"] }
+sha2 = "0.10"
+rand = "0.8"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Networking
+libp2p = { version = "0.54", features = [
+    "tokio",
+    "noise",
+    "yamux",
+    "kad",
+    "identify",
+    "gossipsub",
+    "tcp",
+    "mdns",
+    "request-response",
+    "cbor",
+    "macros",
+] }
+
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Storage
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# Async utilities
+futures = "0.3"
+
+# Misc
+hex = "0.4"
+thiserror = "1"
+anyhow = "1"

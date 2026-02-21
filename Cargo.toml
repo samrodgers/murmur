@@ -1,0 +1,3 @@
+[workspace]
+members = ["murmur-core", "murmur-tui"]
+resolver = "2"
