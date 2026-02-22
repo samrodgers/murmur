@@ -32,7 +32,14 @@ pub fn run() {
                 .unwrap_or_else(|_| PathBuf::from("./murmur-data"));
             std::fs::create_dir_all(&data_dir)?;
 
-            let app_state = rt_handle.block_on(async { AppState::new(data_dir).await })?;
+            let mut app_state = rt_handle.block_on(async { AppState::new(data_dir).await })?;
+
+            // If an identity already exists, start the network immediately.
+            if app_state.has_identity() {
+                if let Err(e) = rt_handle.block_on(async { app_state.start_network().await }) {
+                    tracing::warn!("Failed to start network on launch: {e}");
+                }
+            }
 
             app.manage(std::sync::Mutex::new(app_state));
             app.manage(rt_handle.clone());
