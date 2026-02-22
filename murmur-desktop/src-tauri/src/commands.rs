@@ -44,10 +44,12 @@ pub fn create_identity(
     state.bio = bio.clone();
     state.save_profile().map_err(map_err)?;
 
-    // Start network
-    runtime.block_on(async {
-        state.start_network().await.map_err(map_err)
-    })?;
+    // Start network (best-effort — the app works offline too)
+    if let Err(e) = runtime.block_on(async { state.start_network().await }) {
+        warn!("Network unavailable: {e:#}");
+    }
+
+    let is_online = state.node.is_some();
 
     Ok(Profile {
         pubkey: pubkey_hex.clone(),
@@ -58,7 +60,7 @@ pub fn create_identity(
         joined_at: chrono::Utc::now().timestamp(),
         is_following: false,
         is_blocked: false,
-        is_online: true,
+        is_online,
         avatar_colour: types::avatar_colour_from_pubkey(&pubkey_hex),
     })
 }
