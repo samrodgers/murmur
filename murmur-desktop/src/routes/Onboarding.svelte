@@ -47,10 +47,11 @@
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-left">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
+      <label class="block text-sm font-medium text-gray-700 mb-2" for="onboarding-name">
         What should people call you?
       </label>
       <input
+        id="onboarding-name"
         bind:value={name}
         onkeydown={handleKeydown}
         type="text"
@@ -62,10 +63,11 @@
         disabled={isCreating}
       />
 
-      <label class="block text-sm font-medium text-gray-700 mt-4 mb-2">
+      <label class="block text-sm font-medium text-gray-700 mt-4 mb-2" for="onboarding-bio">
         Optionally add a short bio:
       </label>
       <input
+        id="onboarding-bio"
         bind:value={bio}
         type="text"
         placeholder="A few words about you..."

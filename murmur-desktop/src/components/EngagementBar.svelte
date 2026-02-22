@@ -21,10 +21,15 @@
     onReplyClick,
   }: Props = $props();
 
-  let localReactionCount = $state(reactionCount);
-  let localHasReacted = $state(hasReacted);
-  let localRepostCount = $state(repostCount);
-  let localHasReposted = $state(hasReposted);
+  let localReactionCount = $state(0);
+  let localHasReacted = $state(false);
+  let localRepostCount = $state(0);
+  let localHasReposted = $state(false);
+
+  $effect(() => { localReactionCount = reactionCount; });
+  $effect(() => { localHasReacted = hasReacted; });
+  $effect(() => { localRepostCount = repostCount; });
+  $effect(() => { localHasReposted = hasReposted; });
 
   async function handleReact() {
     if (localHasReacted) return;

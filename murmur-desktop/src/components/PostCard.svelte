@@ -30,11 +30,11 @@
   }
 </script>
 
-<article
+<div
   class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
   onclick={openThread}
   onkeydown={(e) => e.key === 'Enter' && openThread()}
-  role="article"
+  role="button"
   tabindex="0"
 >
   <div class="flex items-start gap-3">
@@ -61,7 +61,8 @@
         {post.content}
       </p>
 
-      <div onclick={stopProp}>
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div onclick={stopProp} onkeydown={stopProp}>
         <EngagementBar
           postId={post.id}
           replyCount={post.reply_count}
@@ -74,4 +75,4 @@
       </div>
     </div>
   </div>
-</article>
+</div>

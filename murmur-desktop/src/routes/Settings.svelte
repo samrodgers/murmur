@@ -96,8 +96,9 @@
           {/if}
         </div>
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">Display name</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="settings-display-name">Display name</label>
         <input
+          id="settings-display-name"
           bind:value={displayName}
           type="text"
           maxlength="50"
@@ -105,8 +106,9 @@
             focus:outline-none focus:ring-2 focus:ring-orange-500 mb-3"
         />
 
-        <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+        <label class="block text-sm font-medium text-gray-700 mb-1" for="settings-bio">Bio</label>
         <input
+          id="settings-bio"
           bind:value={bio}
           type="text"
           maxlength="160"
@@ -166,8 +168,9 @@
       <!-- Storage Budget -->
       <section class="bg-white border border-gray-200 rounded-lg p-5">
         <h3 class="font-semibold text-gray-900 mb-3">Storage Budget</h3>
-        <label class="block text-sm text-gray-600 mb-2">Cache limit</label>
+        <label class="block text-sm text-gray-600 mb-2" for="settings-cache-limit">Cache limit</label>
         <select
+          id="settings-cache-limit"
           onchange={handleCacheLimitChange}
           class="px-3 py-2 border border-gray-300 rounded-lg text-sm
             focus:outline-none focus:ring-2 focus:ring-orange-500"

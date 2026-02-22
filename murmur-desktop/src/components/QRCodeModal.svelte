@@ -17,10 +17,13 @@
   onclick={onClose}
   onkeydown={(e) => e.key === 'Escape' && onClose()}
 >
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-xl"
+    role="dialog"
+    aria-label="Your Murmur ID"
+    tabindex="-1"
     onclick={(e) => e.stopPropagation()}
+    onkeydown={(e) => e.stopPropagation()}
   >
     <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Murmur ID</h3>
 
