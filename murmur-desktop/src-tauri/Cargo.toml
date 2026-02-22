@@ -1,0 +1,25 @@
+[package]
+name = "murmur-desktop"
+version = "0.1.0"
+edition = "2021"
+description = "Murmur desktop app — decentralized social protocol"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+murmur-core = { path = "../../murmur-core" }
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+hex = "0.4"
+anyhow = "1"
+chrono = "0.4"
+
+[lib]
+name = "murmur_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]

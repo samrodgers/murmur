@@ -156,6 +156,15 @@ impl MurmurNode {
         Ok(())
     }
 
+    /// Synchronous broadcast — enqueues without awaiting.
+    /// Returns an error only if the command channel is full or closed.
+    pub fn try_broadcast_event(&self, event: Event) -> anyhow::Result<()> {
+        self.cmd_tx
+            .try_send(NodeCommand::BroadcastEvent(event))
+            .map_err(|e| anyhow::anyhow!("Failed to broadcast event: {e}"))?;
+        Ok(())
+    }
+
     /// Get the current list of connected peers.
     pub async fn get_peers(&self) -> anyhow::Result<Vec<PeerId>> {
         let (tx, mut rx) = mpsc::channel(1);
