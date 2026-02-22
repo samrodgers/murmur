@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getThread } from "../lib/api";
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
   import { relativeTime } from "../lib/utils";
   import type { Post, Thread } from "../lib/types";
   import LetterAvatar from "../components/LetterAvatar.svelte";

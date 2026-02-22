@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
 </script>
 
 <footer class="flex items-center justify-between px-4 py-2 border-t border-gray-200 bg-white text-xs text-gray-500">

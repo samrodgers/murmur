@@ -7,7 +7,7 @@
     getStorageStats,
     setCacheLimit,
   } from "../lib/api";
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
   import type { StorageStats, NetworkStatus } from "../lib/types";
   import LetterAvatar from "../components/LetterAvatar.svelte";
   import QRCodeModal from "../components/QRCodeModal.svelte";

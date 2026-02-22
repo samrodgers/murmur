@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { getFollowingFeed, getDiscoverFeed, getNewVoicesFeed } from "../lib/api";
   import { onNewPost, onPeerChanged } from "../lib/events";
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
   import type { FeedTab } from "../lib/types";
   import TopBar from "../components/TopBar.svelte";
   import FeedTabs from "../components/FeedTabs.svelte";

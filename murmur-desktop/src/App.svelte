@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { hasIdentity, getOwnProfile } from "./lib/api";
-  import { store } from "./lib/stores";
+  import { store } from "./lib/stores.svelte";
   import Onboarding from "./routes/Onboarding.svelte";
   import Timeline from "./routes/Timeline.svelte";
   import ThreadView from "./routes/ThreadView.svelte";

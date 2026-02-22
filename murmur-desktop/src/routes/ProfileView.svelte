@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getProfile, followUser, unfollowUser, blockUser } from "../lib/api";
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
   import type { Profile } from "../lib/types";
   import LetterAvatar from "../components/LetterAvatar.svelte";
   import StatusBar from "../components/StatusBar.svelte";

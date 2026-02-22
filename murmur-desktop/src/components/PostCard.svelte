@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Post } from "../lib/types";
   import { relativeTime } from "../lib/utils";
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
   import LetterAvatar from "./LetterAvatar.svelte";
   import TemperatureBadge from "./TemperatureBadge.svelte";
   import EngagementBar from "./EngagementBar.svelte";

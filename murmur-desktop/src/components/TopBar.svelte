@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
   import LetterAvatar from "./LetterAvatar.svelte";
 
   function goToSettings() {

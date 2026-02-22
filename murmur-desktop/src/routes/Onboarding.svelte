@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createIdentity } from "../lib/api";
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
 
   let name = $state("");
   let bio = $state("");

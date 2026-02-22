@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createPost } from "../lib/api";
-  import { store } from "../lib/stores";
+  import { store } from "../lib/stores.svelte";
 
   let content = $state("");
   let isSubmitting = $state(false);
