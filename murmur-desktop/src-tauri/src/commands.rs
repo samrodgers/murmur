@@ -401,22 +401,28 @@ pub fn start_network(
         });
     }
 
-    runtime
-        .block_on(async { state.start_network().await })
-        .map_err(map_err)?;
+    // Don't use `?` — always return a NetworkStatus so the frontend
+    // can display the error in the UI instead of it being swallowed.
+    if let Err(e) = runtime.block_on(async { state.start_network().await }) {
+        return Ok(NetworkStatus {
+            online: false,
+            peer_count: 0,
+            peers: vec![],
+            error: Some(e.to_string()),
+        });
+    }
 
     // Spawn network listener for the newly created net_rx.
-    // Clone the inner Handle (not the State wrapper) so it's 'static.
     let rt: tokio::runtime::Handle = (*runtime).clone();
     std::thread::spawn(move || {
         rt.block_on(crate::state::run_network_listener(app_handle));
     });
 
     Ok(NetworkStatus {
-        online: state.node.is_some(),
+        online: true,
         peer_count: state.peer_count,
         peers: vec![],
-        error: state.network_error.clone(),
+        error: None,
     })
 }
 

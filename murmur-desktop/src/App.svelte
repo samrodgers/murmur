@@ -11,34 +11,33 @@
   let ready = $state(false);
 
   onMount(async () => {
+    // 1. Check identity and load profile
     try {
       const exists = await hasIdentity();
       if (exists) {
         const profile = await getOwnProfile();
         store.setProfile(profile);
         store.navigate({ page: "timeline" });
-
-        // Check network status; if offline, actively try to start it.
-        const net = await getNetworkStatus();
-        store.setOnline(net.online);
-        store.setPeerCount(net.peer_count);
-
-        if (!net.online) {
-          try {
-            const retry = await startNetwork();
-            store.setOnline(retry.online);
-            store.setPeerCount(retry.peer_count);
-            if (retry.error) {
-              store.setNetworkError(retry.error);
-            }
-          } catch (e) {
-            store.setNetworkError(String(e));
-          }
-        }
       }
     } catch (e) {
       console.error("Startup check failed:", e);
     }
+
+    // 2. Always try to bring the network up (separate from identity check)
+    if (store.profile) {
+      // First, try startNetwork directly — it's a no-op if already running
+      try {
+        const result = await startNetwork();
+        store.setOnline(result.online);
+        store.setPeerCount(result.peer_count);
+        if (result.error) {
+          store.setNetworkError(result.error);
+        }
+      } catch (e) {
+        store.setNetworkError(`Network start failed: ${e}`);
+      }
+    }
+
     ready = true;
   });
 </script>
