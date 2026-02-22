@@ -346,15 +346,20 @@ pub fn get_thread(post_id: String, state: State<'_, Mutex<AppState>>) -> AppResu
 // ─── Social ─────────────────────────────────────────────────────────────────
 
 #[tauri::command]
-pub fn follow_user(pubkey: String, _state: State<'_, Mutex<AppState>>) -> AppResult<()> {
-    // Phase 2: Implement follow event creation and storage
-    info!(%pubkey, "Follow requested (not yet implemented)");
+pub fn follow_user(pubkey: String, state: State<'_, Mutex<AppState>>) -> AppResult<()> {
+    let state = state.lock().map_err(map_err)?;
+    let pk = murmur_core::identity::keypair::PubKey::from_hex(&pubkey).map_err(map_err)?;
+    state.db.follow(&pk).map_err(map_err)?;
+    info!(%pubkey, "Followed user");
     Ok(())
 }
 
 #[tauri::command]
-pub fn unfollow_user(pubkey: String, _state: State<'_, Mutex<AppState>>) -> AppResult<()> {
-    info!(%pubkey, "Unfollow requested (not yet implemented)");
+pub fn unfollow_user(pubkey: String, state: State<'_, Mutex<AppState>>) -> AppResult<()> {
+    let state = state.lock().map_err(map_err)?;
+    let pk = murmur_core::identity::keypair::PubKey::from_hex(&pubkey).map_err(map_err)?;
+    state.db.unfollow(&pk).map_err(map_err)?;
+    info!(%pubkey, "Unfollowed user");
     Ok(())
 }
 
@@ -367,15 +372,15 @@ pub fn block_user(pubkey: String, _state: State<'_, Mutex<AppState>>) -> AppResu
 #[tauri::command]
 pub fn get_profile(pubkey: String, state: State<'_, Mutex<AppState>>) -> AppResult<Profile> {
     let state = state.lock().map_err(map_err)?;
+    let pk = murmur_core::identity::keypair::PubKey::from_hex(&pubkey).map_err(map_err)?;
 
-    let post_count = match murmur_core::identity::keypair::PubKey::from_hex(&pubkey) {
-        Ok(pk) => state
-            .db
-            .get_events_by_pubkey(&pk, 0, 1000)
-            .map(|e| e.len() as u32)
-            .unwrap_or(0),
-        Err(_) => 0,
-    };
+    let post_count = state
+        .db
+        .get_events_by_pubkey(&pk, 0, 1000)
+        .map(|e| e.len() as u32)
+        .unwrap_or(0);
+
+    let is_following = state.db.is_following(&pk).unwrap_or(false);
 
     Ok(Profile {
         pubkey: pubkey.clone(),
@@ -384,7 +389,7 @@ pub fn get_profile(pubkey: String, state: State<'_, Mutex<AppState>>) -> AppResu
         temperature: 0.0,
         post_count,
         joined_at: 0,
-        is_following: false,
+        is_following,
         is_blocked: false,
         is_online: false,
         avatar_colour: types::avatar_colour_from_pubkey(&pubkey),

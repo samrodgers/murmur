@@ -310,6 +310,35 @@ impl Database {
         Ok(events)
     }
 
+    /// Follow a pubkey.
+    pub fn follow(&self, pubkey: &PubKey) -> Result<(), DbError> {
+        let now = chrono::Utc::now().timestamp();
+        self.conn.execute(
+            "INSERT OR IGNORE INTO follows (pubkey, followed_at) VALUES (?1, ?2)",
+            params![pubkey.0.as_slice(), now],
+        )?;
+        Ok(())
+    }
+
+    /// Unfollow a pubkey.
+    pub fn unfollow(&self, pubkey: &PubKey) -> Result<(), DbError> {
+        self.conn.execute(
+            "DELETE FROM follows WHERE pubkey = ?1",
+            params![pubkey.0.as_slice()],
+        )?;
+        Ok(())
+    }
+
+    /// Check if a pubkey is followed.
+    pub fn is_following(&self, pubkey: &PubKey) -> Result<bool, DbError> {
+        let count: i64 = self.conn.query_row(
+            "SELECT COUNT(*) FROM follows WHERE pubkey = ?1",
+            params![pubkey.0.as_slice()],
+            |row| row.get(0),
+        )?;
+        Ok(count > 0)
+    }
+
     /// Get all replies to a given event (direct children).
     pub fn get_replies(&self, parent_id: &EventId) -> Result<Vec<Event>, DbError> {
         let mut stmt = self.conn.prepare(
