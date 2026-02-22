@@ -10,6 +10,7 @@ class AppStore {
   currentTab: FeedTab = $state("following");
   peerCount: number = $state(0);
   isOnline: boolean = $state(false);
+  networkError: string | null = $state(null);
 
   navigate(route: Route) {
     this.route = route;
@@ -36,6 +37,10 @@ class AppStore {
 
   setPeerCount(count: number) {
     this.peerCount = count;
+  }
+
+  setNetworkError(error: string | null) {
+    this.networkError = error;
   }
 
   removePost(postId: string) {

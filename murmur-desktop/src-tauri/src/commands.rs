@@ -44,10 +44,14 @@ pub fn create_identity(
     state.bio = bio.clone();
     state.save_profile().map_err(map_err)?;
 
-    // Start network
-    runtime.block_on(async {
-        state.start_network().await.map_err(map_err)
-    })?;
+    // Try to start network (don't fail identity creation if network fails)
+    let online = match runtime.block_on(async { state.start_network().await }) {
+        Ok(()) => true,
+        Err(e) => {
+            tracing::warn!("Network failed to start after identity creation: {e}");
+            false
+        }
+    };
 
     Ok(Profile {
         pubkey: pubkey_hex.clone(),
@@ -58,7 +62,7 @@ pub fn create_identity(
         joined_at: chrono::Utc::now().timestamp(),
         is_following: false,
         is_blocked: false,
-        is_online: true,
+        is_online: online,
         avatar_colour: types::avatar_colour_from_pubkey(&pubkey_hex),
     })
 }

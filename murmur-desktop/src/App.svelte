@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { hasIdentity, getOwnProfile, getNetworkStatus } from "./lib/api";
+  import { hasIdentity, getOwnProfile, getNetworkStatus, startNetwork } from "./lib/api";
   import { store } from "./lib/stores.svelte";
   import Onboarding from "./routes/Onboarding.svelte";
   import Timeline from "./routes/Timeline.svelte";
@@ -18,9 +18,23 @@
         store.setProfile(profile);
         store.navigate({ page: "timeline" });
 
+        // Check network status; if offline, actively try to start it.
         const net = await getNetworkStatus();
         store.setOnline(net.online);
         store.setPeerCount(net.peer_count);
+
+        if (!net.online) {
+          try {
+            const retry = await startNetwork();
+            store.setOnline(retry.online);
+            store.setPeerCount(retry.peer_count);
+            if (retry.error) {
+              store.setNetworkError(retry.error);
+            }
+          } catch (e) {
+            store.setNetworkError(String(e));
+          }
+        }
       }
     } catch (e) {
       console.error("Startup check failed:", e);
