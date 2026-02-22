@@ -270,23 +270,30 @@ pub fn get_following_feed(
     state: State<'_, Mutex<AppState>>,
 ) -> AppResult<Vec<Post>> {
     let state = state.lock().map_err(map_err)?;
-    let pubkey = state.own_pubkey_hex();
-    let events = state.db.get_posts(limit).map_err(map_err)?;
+    let pubkey_hex = state.own_pubkey_hex();
+    let own_pubkey = state
+        .identity
+        .as_ref()
+        .map(|id| id.pubkey())
+        .ok_or_else(|| "No identity".to_string())?;
+    let events = state
+        .db
+        .get_following_posts(&own_pubkey, limit)
+        .map_err(map_err)?;
     Ok(events
         .iter()
-        .map(|e| types::event_to_post(e, &pubkey, &state.db))
+        .map(|e| types::event_to_post(e, &pubkey_hex, &state.db))
         .collect())
 }
 
 #[tauri::command]
 pub fn get_discover_feed(limit: u32, state: State<'_, Mutex<AppState>>) -> AppResult<Vec<Post>> {
-    // Phase 1: same as following feed (all posts)
     let state = state.lock().map_err(map_err)?;
-    let pubkey = state.own_pubkey_hex();
+    let pubkey_hex = state.own_pubkey_hex();
     let events = state.db.get_posts(limit).map_err(map_err)?;
     Ok(events
         .iter()
-        .map(|e| types::event_to_post(e, &pubkey, &state.db))
+        .map(|e| types::event_to_post(e, &pubkey_hex, &state.db))
         .collect())
 }
 
@@ -295,13 +302,20 @@ pub fn get_new_voices_feed(
     limit: u32,
     state: State<'_, Mutex<AppState>>,
 ) -> AppResult<Vec<Post>> {
-    // Phase 1: same as following feed (all posts)
     let state = state.lock().map_err(map_err)?;
-    let pubkey = state.own_pubkey_hex();
-    let events = state.db.get_posts(limit).map_err(map_err)?;
+    let pubkey_hex = state.own_pubkey_hex();
+    let own_pubkey = state
+        .identity
+        .as_ref()
+        .map(|id| id.pubkey())
+        .ok_or_else(|| "No identity".to_string())?;
+    let events = state
+        .db
+        .get_new_voices_posts(&own_pubkey, limit)
+        .map_err(map_err)?;
     Ok(events
         .iter()
-        .map(|e| types::event_to_post(e, &pubkey, &state.db))
+        .map(|e| types::event_to_post(e, &pubkey_hex, &state.db))
         .collect())
 }
 

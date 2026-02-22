@@ -251,6 +251,65 @@ impl Database {
         Ok(events)
     }
 
+    /// Following feed: own posts + posts from followed pubkeys.
+    pub fn get_following_posts(&self, own_pubkey: &PubKey, limit: u32) -> Result<Vec<Event>, DbError> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, pubkey, created_at, kind, content, tags, sig FROM events
+             WHERE kind = 1
+               AND (pubkey = ?1 OR pubkey IN (SELECT pubkey FROM follows))
+             ORDER BY created_at DESC
+             LIMIT ?2",
+        )?;
+
+        let rows = stmt.query_map(params![own_pubkey.0.as_slice(), limit], |row| {
+            Ok(RawEvent {
+                id: row.get(0)?,
+                pubkey: row.get(1)?,
+                created_at: row.get(2)?,
+                kind: row.get(3)?,
+                content: row.get(4)?,
+                tags: row.get(5)?,
+                sig: row.get(6)?,
+            })
+        })?;
+
+        let mut events = Vec::new();
+        for row in rows {
+            events.push(raw_to_event(row?)?);
+        }
+        Ok(events)
+    }
+
+    /// New-voices feed: posts from authors you don't follow (excluding yourself).
+    pub fn get_new_voices_posts(&self, own_pubkey: &PubKey, limit: u32) -> Result<Vec<Event>, DbError> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, pubkey, created_at, kind, content, tags, sig FROM events
+             WHERE kind = 1
+               AND pubkey != ?1
+               AND pubkey NOT IN (SELECT pubkey FROM follows)
+             ORDER BY created_at DESC
+             LIMIT ?2",
+        )?;
+
+        let rows = stmt.query_map(params![own_pubkey.0.as_slice(), limit], |row| {
+            Ok(RawEvent {
+                id: row.get(0)?,
+                pubkey: row.get(1)?,
+                created_at: row.get(2)?,
+                kind: row.get(3)?,
+                content: row.get(4)?,
+                tags: row.get(5)?,
+                sig: row.get(6)?,
+            })
+        })?;
+
+        let mut events = Vec::new();
+        for row in rows {
+            events.push(raw_to_event(row?)?);
+        }
+        Ok(events)
+    }
+
     /// Get all replies to a given event (direct children).
     pub fn get_replies(&self, parent_id: &EventId) -> Result<Vec<Event>, DbError> {
         let mut stmt = self.conn.prepare(
