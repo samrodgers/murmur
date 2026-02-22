@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { hasIdentity, getOwnProfile } from "./lib/api";
+  import { hasIdentity, getOwnProfile, getNetworkStatus } from "./lib/api";
   import { store } from "./lib/stores.svelte";
   import Onboarding from "./routes/Onboarding.svelte";
   import Timeline from "./routes/Timeline.svelte";
@@ -17,6 +17,10 @@
         const profile = await getOwnProfile();
         store.setProfile(profile);
         store.navigate({ page: "timeline" });
+
+        const net = await getNetworkStatus();
+        store.setOnline(net.online);
+        store.setPeerCount(net.peer_count);
       }
     } catch (e) {
       console.error("Startup check failed:", e);

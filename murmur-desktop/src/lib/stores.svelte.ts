@@ -30,9 +30,12 @@ class AppStore {
     this.timeline = posts;
   }
 
+  setOnline(online: boolean) {
+    this.isOnline = online;
+  }
+
   setPeerCount(count: number) {
     this.peerCount = count;
-    this.isOnline = count > 0;
   }
 
   removePost(postId: string) {

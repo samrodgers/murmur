@@ -33,6 +33,8 @@
       store.setProfile(profile);
 
       networkStatus = await getNetworkStatus();
+      store.setOnline(networkStatus.online);
+      store.setPeerCount(networkStatus.peer_count);
       storageStats = await getStorageStats();
     } catch (e) {
       console.error("Failed to load settings data:", e);
