@@ -35,6 +35,7 @@ export interface NetworkStatus {
   online: boolean;
   peer_count: number;
   peers: PeerInfo[];
+  error?: string;
 }
 
 export interface StorageStats {

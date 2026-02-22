@@ -4,6 +4,7 @@
     getOwnProfile,
     updateProfile,
     getNetworkStatus,
+    startNetwork,
     getStorageStats,
     setCacheLimit,
   } from "../lib/api";
@@ -20,6 +21,7 @@
   let showQR = $state(false);
   let isSaving = $state(false);
   let saveMessage = $state("");
+  let isRetrying = $state(false);
 
   onMount(() => {
     loadData();
@@ -70,6 +72,22 @@
       }
     } catch (err) {
       console.error("Failed to set cache limit:", err);
+    }
+  }
+
+  async function handleRetryNetwork() {
+    isRetrying = true;
+    try {
+      networkStatus = await startNetwork();
+      store.setOnline(networkStatus.online);
+      store.setPeerCount(networkStatus.peer_count);
+    } catch (e) {
+      console.error("Failed to start network:", e);
+      if (networkStatus) {
+        networkStatus = { ...networkStatus, error: String(e) };
+      }
+    } finally {
+      isRetrying = false;
     }
   }
 
@@ -135,13 +153,28 @@
       <section class="bg-white border border-gray-200 rounded-lg p-5">
         <h3 class="font-semibold text-gray-900 mb-3">Network</h3>
         <div class="space-y-2 text-sm text-gray-600">
-          <div class="flex justify-between">
+          <div class="flex justify-between items-center">
             <span>Status</span>
             <span class="flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full {store.isOnline ? 'bg-green-500' : 'bg-red-400'}"></span>
               {store.isOnline ? "Online" : "Offline"}
+              {#if !store.isOnline}
+                <button
+                  onclick={handleRetryNetwork}
+                  disabled={isRetrying}
+                  class="ml-2 px-2 py-0.5 text-xs bg-orange-500 text-white rounded
+                    hover:bg-orange-600 disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                  {isRetrying ? "Retrying..." : "Retry"}
+                </button>
+              {/if}
             </span>
           </div>
+          {#if networkStatus?.error && !store.isOnline}
+            <div class="bg-red-50 border border-red-200 rounded p-2 text-xs text-red-700">
+              {networkStatus.error}
+            </div>
+          {/if}
           <div class="flex justify-between">
             <span>Peers</span>
             <span class="font-medium text-gray-900">{store.peerCount} connected</span>

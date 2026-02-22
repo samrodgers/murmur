@@ -43,6 +43,8 @@ pub struct NetworkStatus {
     pub online: bool,
     pub peer_count: u32,
     pub peers: Vec<PeerInfo>,
+    /// If the network failed to start, this holds the error message.
+    pub error: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

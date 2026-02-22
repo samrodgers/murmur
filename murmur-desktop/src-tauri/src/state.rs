@@ -21,6 +21,8 @@ pub struct AppState {
     pub display_name: String,
     pub bio: String,
     pub cache_limit_mb: u32,
+    /// Last network startup error, if any.
+    pub network_error: Option<String>,
 }
 
 impl AppState {
@@ -72,6 +74,7 @@ impl AppState {
             display_name,
             bio,
             cache_limit_mb: 500,
+            network_error: None,
         })
     }
 
@@ -100,11 +103,21 @@ impl AppState {
         if self.node.is_some() {
             return Ok(());
         }
-        let (node, net_rx) = MurmurNode::start(9000).await?;
-        info!(peer_id = %node.peer_id(), "Network node started");
-        self.node = Some(node);
-        self.net_rx = Some(net_rx);
-        Ok(())
+        // Port 0 = let the OS pick any available port.
+        // mDNS announces the actual address so peers will find us.
+        match MurmurNode::start(0).await {
+            Ok((node, net_rx)) => {
+                info!(peer_id = %node.peer_id(), "Network node started");
+                self.node = Some(node);
+                self.net_rx = Some(net_rx);
+                self.network_error = None;
+                Ok(())
+            }
+            Err(e) => {
+                self.network_error = Some(e.to_string());
+                Err(e)
+            }
+        }
     }
 }
 

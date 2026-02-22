@@ -112,6 +112,10 @@ export async function getNetworkStatus(): Promise<NetworkStatus> {
   return invoke("get_network_status");
 }
 
+export async function startNetwork(): Promise<NetworkStatus> {
+  return invoke("start_network");
+}
+
 export async function getStorageStats(): Promise<StorageStats> {
   return invoke("get_storage_stats");
 }

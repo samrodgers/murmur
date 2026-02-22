@@ -77,6 +77,7 @@ pub fn run() {
             commands::get_profile,
             commands::get_following_list,
             // Network
+            commands::start_network,
             commands::get_network_status,
             commands::get_storage_stats,
             commands::set_cache_limit,

@@ -382,12 +382,48 @@ pub fn get_following_list(_state: State<'_, Mutex<AppState>>) -> AppResult<Vec<P
 // ─── Network ────────────────────────────────────────────────────────────────
 
 #[tauri::command]
+pub fn start_network(
+    state: State<'_, Mutex<AppState>>,
+    runtime: State<'_, tokio::runtime::Handle>,
+    app_handle: tauri::AppHandle,
+) -> AppResult<NetworkStatus> {
+    let mut state = state.lock().map_err(map_err)?;
+    if state.node.is_some() {
+        return Ok(NetworkStatus {
+            online: true,
+            peer_count: state.peer_count,
+            peers: vec![],
+            error: None,
+        });
+    }
+
+    runtime
+        .block_on(async { state.start_network().await })
+        .map_err(map_err)?;
+
+    // Spawn network listener for the newly created net_rx.
+    // Clone the inner Handle (not the State wrapper) so it's 'static.
+    let rt: tokio::runtime::Handle = (*runtime).clone();
+    std::thread::spawn(move || {
+        rt.block_on(crate::state::run_network_listener(app_handle));
+    });
+
+    Ok(NetworkStatus {
+        online: state.node.is_some(),
+        peer_count: state.peer_count,
+        peers: vec![],
+        error: state.network_error.clone(),
+    })
+}
+
+#[tauri::command]
 pub fn get_network_status(state: State<'_, Mutex<AppState>>) -> AppResult<NetworkStatus> {
     let state = state.lock().map_err(map_err)?;
     Ok(NetworkStatus {
         online: state.node.is_some(),
         peer_count: state.peer_count,
         peers: vec![], // Phase 2: populate from node
+        error: state.network_error.clone(),
     })
 }
 
